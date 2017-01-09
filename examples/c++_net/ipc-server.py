@@ -109,6 +109,33 @@ class IPCServer():
             self.tx.connected = self.status.synced and self.command.connected
             self.send_msg(identity, IPC_CONNECTED)
 
+        elif self.rx.type == IPC_HOMEALL:
+
+            self.command.set_task_state(application.TASK_STATE_ESTOP_RESET)
+            self.command.set_task_state(application.TASK_STATE_ON)
+
+            self.command.set_task_mode(application.TASK_MODE_MANUAL)
+            ticket = self.command.home_axis(0)
+            self.command.wait_completed(ticket)
+            print "home(x) complete..."
+            ticket = self.command.home_axis(1)
+            self.command.wait_completed(ticket)
+            print "home(y) complete..."
+
+            self.tx.x = self.status.motion.position.x - \
+                        self.status.motion.g5x_offset.x - \
+                        self.status.motion.g92_offset.x - \
+                        self.status.io.tool_offset.x
+            self.tx.y = self.status.motion.position.y - \
+                        self.status.motion.g5x_offset.y - \
+                        self.status.motion.g92_offset.y - \
+                        self.status.io.tool_offset.y
+
+            self.command.wait_completed()
+            print "pos retr<%f %f>" % (self.tx.x,self.tx.y)
+
+            self.send_msg(identity, IPC_HOMEALL)
+
     def status_discovered(self, data):
         if self.debug:
             print('discovered %s %s' % (data.name, data.dsn))

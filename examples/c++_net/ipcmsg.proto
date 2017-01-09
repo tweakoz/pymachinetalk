@@ -4,6 +4,7 @@ enum MessageType {
     IPC_JOG = 1;
     IPC_POSITION = 2;
     IPC_CONNECTED = 3;
+    IPC_HOMEALL = 4;
 }
 
 enum JogType {

@@ -45,6 +45,12 @@ int main (int argc, char *argv[])
     recv_message(&socket, &rx);
     printf("connection status %i\n", rx.connected());
 
+    // get connection status
+    tx.set_type(pb::IPC_HOMEALL);
+    send_message(&socket, &tx);
+    recv_message(&socket, &rx);
+    printf("homed X:%f Y:%f\n", rx.x(), rx.y());
+
     // get current position
     tx.set_type(pb::IPC_POSITION);
     send_message(&socket, &tx);
